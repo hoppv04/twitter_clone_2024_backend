@@ -141,7 +141,7 @@ export const likeUnlikePost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-      .sort({ createAt: -1 })
+      .sort({ createdAt: -1 })
       .populate({
         path: "user",
         select: "-password",
@@ -203,7 +203,7 @@ export const getFollowingPosts = async (req, res) => {
 
     const feedPosts = await Post.find({ user: { $in: following } })
       .sort({
-        createAt: -1,
+        createdAt: -1,
       })
       .populate({
         path: "user",
@@ -234,7 +234,7 @@ export const getUserPost = async (req, res) => {
 
     const posts = await Post.find({ user: user._id })
       .sort({
-        createAt: -1,
+        createdAt: -1,
       })
       .populate({
         path: "user",
