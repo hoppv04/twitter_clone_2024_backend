@@ -23,10 +23,11 @@ export const getUserProfile = async (req, res) => {
 export const followUnFollowUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user._id;
     const userToModify = await User.findById(id);
-    const currentUser = await User.findById(req.user._id);
+    const currentUser = await User.findById(userId);
 
-    if (id === req.user._id.toString()) {
+    if (id === userId.toString()) {
       return res.status(400).json({
         error: "You can't follow/unfollow yourself",
       });
@@ -40,19 +41,19 @@ export const followUnFollowUser = async (req, res) => {
 
     const isFollowing = currentUser.following.includes(id);
     if (isFollowing) {
-      await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
+      await User.findByIdAndUpdate(id, { $pull: { followers: userId } });
+      await User.findByIdAndUpdate(userId, { $pull: { following: id } });
 
       return res.status(200).json({
         message: "User unfollowed successfully",
       });
     } else {
-      await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
+      await User.findByIdAndUpdate(id, { $push: { followers: userId } });
+      await User.findByIdAndUpdate(userId, { $push: { following: id } });
 
       const newNotification = new Notification({
         type: "follow",
-        from: req.user._id,
+        from: userId,
         to: userToModify._id,
       });
 
